@@ -12,6 +12,8 @@ interface CreateProductParams {
   price: number;
   stock: number;
   imageUrl: string;
+  paymentMethod: string;
+  interest?: number;
 }
 
 export async function createProduct({
@@ -21,6 +23,8 @@ export async function createProduct({
   price,
   stock,
   imageUrl,
+  paymentMethod,
+  interest
 }: CreateProductParams): Promise<void> {
   try {
     console.log('llego')
@@ -33,6 +37,8 @@ export async function createProduct({
       price,
       stock,
       imageUrl,
+      paymentMethod,
+      interest,
     })
   } catch (error: any) {
     throw new Error(`Failed to create product: ${error.message}`);

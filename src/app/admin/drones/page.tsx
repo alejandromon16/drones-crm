@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle";
 import { Button } from "@/components/ui/button";
 import { getProducts } from "@/lib/action/products.actions";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 type Payment = {
@@ -35,6 +36,7 @@ const columns: ColumnDef<Payment>[] = [
 
 export default function UsersPage({}: Props) {
   const [drones, setDrones] = useState<any>([])
+  const router = useRouter()
 
   useEffect(() => {
     const products = async () => {
@@ -50,7 +52,9 @@ export default function UsersPage({}: Props) {
       <div className="flex flex-row w-full justify-between">
         <PageTitle title="Drones" />
         <Button
-          onClick={() => {}}
+          onClick={() => {
+            router.push("/admin/drones/create")
+          }}
         >Agregar Dron</Button>
       </div>
       <DataTable columns={columns} data={drones ?? []} />

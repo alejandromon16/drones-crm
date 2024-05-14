@@ -1,4 +1,6 @@
-'use client'
+"use client"
+
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -9,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React from "react";
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { ArrowLeft } from "lucide-react";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,72 +18,95 @@ import { z } from "zod";
 import { createProduct } from "@/lib/action/products.actions";
 import { useRouter } from "next/navigation";
 
+const Radio = ({ label, value, onChange, checked, name }) => (
+  <label className="inline-flex items-center space-x-2">
+    <input
+      type="radio"
+      name={name}
+      value={value}
+      checked={checked}
+      onChange={onChange}
+      className="form-radio h-4 w-4 text-blue-600"
+    />
+    <span className="text-gray-700">{label}</span>
+  </label>
+);
+
+const RadioGroup = ({ children, value, onChange }) => (
+  <div>
+    {React.Children.map(children, child => 
+      React.cloneElement(child, {
+        checked: child.props.value === value,
+        onChange: onChange,
+      })
+    )}
+  </div>
+);
+
+
 type FormValues = {
-    description: string;
-    imageUrl: string;
-    name: string;
-    price: string;
-    stock: string;
-    subtitle: string;
+  description: string;
+  imageUrl: string;
+  name: string;
+  price: string;
+  stock: string;
+  subtitle: string;
+  paymentMethod: string;
+  interest?: string;
 };
 
 const schema = z.object({
   name: z.string().min(1, "El nombre del dron es obligatorio"),
-  description: z.string().min(1, "El número de teléfono es obligatorio"),
+  description: z.string().min(1, "La descripción es obligatoria"),
   price: z.string(),
   stock: z.string(),
   subtitle: z.string(),
   imageUrl: z.string(),
+  paymentMethod: z.string(),
+  interest: z.string().optional(),
 });
 
 function Page() {
-  const router = useRouter()
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-  },
-);
+  });
 
-
-  const handleBackClick = () => {
-  };
+  const handleBackClick = () => router.back();
 
   const create = async (data: FormValues) => {
     try {
       const response = await createProduct({
-        name: data.name,
-        description: data.description,
-        imageUrl: data.imageUrl,
+        ...data,
         price: parseInt(data.price, 10),
         stock: parseInt(data.stock, 10),
-        subtitle: data.subtitle,
-      })
-
-      router.back()
-
+        interest: parseInt(data.interest as string || '')
+      });
+      router.back();
     } catch (error) {
       console.error("Error creating product:", error);
     }
   };
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log('data', data)
-    create(data)
-  }
+    console.log('data', data);
+    create(data);
+  };
 
   return (
     <FormProvider {...form}>
       <div>
-        <Button onClick={() => handleBackClick()} variant="outline" size="icon">
+        <Button onClick={handleBackClick} variant="outline" size="icon">
           <ArrowLeft className="h-4 w-4" />
         </Button>
       </div>
-      <div className=" flex flex-col w-full justify-center items-center">
+      <div className="flex flex-col w-full justify-center items-center">
         <div className="w-1/2 flex flex-col gap-y-5">
           <div>
             <h1 className="font-semibold text-2xl my-10">Nuevo Dron</h1>
           </div>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-10 ">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-10">
             <FormField
               control={form.control}
               name="name"
@@ -106,7 +130,7 @@ function Page() {
                 <FormItem>
                   <FormLabel>Subtitulo</FormLabel>
                   <FormControl>
-                    <Input placeholder="número de teléfono" {...field} />
+                    <Input placeholder="subtitulo" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,9 +141,9 @@ function Page() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Input placeholder="Description" {...field} />
+                    <Input placeholder="Descripción" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,9 +154,9 @@ function Page() {
               name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image Url</FormLabel>
+                  <FormLabel>URL de la Imagen</FormLabel>
                   <FormControl>
-                    <Input placeholder="url" {...field} />
+                    <Input placeholder="URL de la imagen" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -145,7 +169,7 @@ function Page() {
                 <FormItem>
                   <FormLabel>Precio</FormLabel>
                   <FormControl>
-                    <Input placeholder="url" {...field} />
+                    <Input placeholder="Precio" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -158,15 +182,40 @@ function Page() {
                 <FormItem>
                   <FormLabel>Stock</FormLabel>
                   <FormControl>
-                    <Input placeholder="url" {...field} />
+                    <Input placeholder="Stock" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-            >
+            <FormField
+              control={form.control}
+              name="paymentMethod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Método de Pago</FormLabel>
+                  <RadioGroup {...field}>
+                    <Radio label="Efectivo" value="cash" name="paymentMethod"/>
+                    <Radio label="Crédito" value="credit" name="paymentMethod"/>
+                  </RadioGroup>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            { form.watch("paymentMethod") === "credit" && (
+              <FormField
+              control={form.control}
+              name="interest"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tasa de Interés</FormLabel>
+                  <Input type="text" placeholder="Ingrese la tasa de interés" {...field} />
+                </FormItem>
+              )}
+            />
+
+            )}
+            <Button type="submit">
               Crear
             </Button>
           </form>
