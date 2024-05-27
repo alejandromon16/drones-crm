@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useCartStore from "@/stores/cart.store";
+import { randomUUID } from "crypto";
 
 const Header = () => (
   <div className="flex flex-col items-center border-b bg-white py-4 sm:flex-row sm:px-10 lg:px-20 xl:px-32">
@@ -209,6 +210,12 @@ const PaymentDetailsCard = () => (
 const QRCodeComponent = () => {
     const [qrImage, setQrImage] = useState(null);
     const { items } = useCartStore();
+
+    function generateDateBasedId(): string {
+        const datePart = new Date().toISOString().replace(/[-:.TZ]/g, '');
+        const randomPart = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        return `${datePart}-${randomPart}`;
+      }
   
     useEffect(() => {
       const generateQrCode = async () => {
@@ -236,7 +243,7 @@ const QRCodeComponent = () => {
             tcCorreo: "alejandromontero1551@gmail.com",
             tcNombreUsuario: "alm1",
             tnCiNit: "8905881",
-            tcNroPago: "Grupo5-19",
+            tcNroPago: `Grupo5-${generateDateBasedId()}`,
             tnMontoClienteEmpresa: items.reduce((total, item) => total + item.price * item.quantity, 0)+30,
             tcUrlCallBack: "https://us-central1-tienda-fa7e8.cloudfunctions.net/paymentCallback",
             tcUrlReturn: "",
