@@ -31,7 +31,7 @@ function HeaderEcommerce() {
               <span className="sr-only">Drones Bolivia</span>
               <img
                 className="h-20 w-auto"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Sigr2CyEPtyxb3kuiHwjYWlKF_XiEnTCdA&usqp=CAU"
+                src="https://cdn.vectorstock.com/i/500p/15/45/drone-logo-concept-design-arial-vector-30821545.jpg"
                 alt=""
               />
             </a>

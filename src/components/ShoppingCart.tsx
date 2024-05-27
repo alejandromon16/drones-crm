@@ -15,20 +15,20 @@ export default function ShoppingCart() {
 
   const handleCreateOrder = async () => {
     try {
-      await Promise.all(items.map(item => 
-        updateProductStock({
-          productId: item.id,
-          newStock: item.stock - item.quantity
-        })
-      ));
+      // await Promise.all(items.map(item => 
+      //   updateProductStock({
+      //     productId: item.id,
+      //     newStock: item.stock - item.quantity
+      //   })
+      // ));
       
-      clearCart(),
-      toggleCart(),
-      toast({
-        title:"Compra con Exito",
-        description: `Tu compra ha sido exitosa`
-      })
-      router.replace("/")
+      // clearCart(),
+      // toggleCart(),
+      // toast({
+      //   title:"Compra con Exito",
+      //   description: `Tu compra ha sido exitosa`
+      // })
+      router.push('/checkout')
     }catch(e) {
       toast({
         title:"Error",
@@ -137,7 +137,7 @@ export default function ShoppingCart() {
                           onClick={() => handleCreateOrder()}
                           className="flex items-center justify-center rounded-md border border-transparent bg-black px-6 py-3 text-base font-medium text-white shadow-sm hover:opacity-65"
                         >
-                          Comprar
+                          Proceder a Pago
                         </button>
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
