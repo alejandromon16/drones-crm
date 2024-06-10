@@ -4,18 +4,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import React, { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle";
 import { Button } from "@/components/ui/button";
-import { getProducts } from "@/lib/action/products.actions";
 import { useRouter } from "next/navigation";
+import { useGetDronesQuery } from "../../../../generated-types";
 
 type Props = {};
-type Payment = {
-  name: string;
-  email: string;
-  lastOrder: string;
-  method: string;
-};
 
-const columns: ColumnDef<Payment>[] = [
+
+const columns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Nombre"
@@ -35,17 +30,8 @@ const columns: ColumnDef<Payment>[] = [
 ];
 
 export default function UsersPage({}: Props) {
-  const [drones, setDrones] = useState<any>([])
   const router = useRouter()
-
-  useEffect(() => {
-    const products = async () => {
-      const res = await getProducts()
-      setDrones(res)
-    }
-
-    products()
-  },[])
+  const {data, isFetched} = useGetDronesQuery({},{})
 
   return (
     <div className="flex flex-col gap-5  w-full">
@@ -57,7 +43,9 @@ export default function UsersPage({}: Props) {
           }}
         >Agregar Dron</Button>
       </div>
-      <DataTable columns={columns} data={drones ?? []} />
+      {isFetched && (
+        <DataTable columns={columns} data={data?.getDrones ?? []} />
+      )}
     </div>
   );
 }

@@ -1,0 +1,21 @@
+query GetDrones{
+  getDrones{
+    name
+    subtitle
+    description
+    price
+    stock
+    imageUrl
+  }
+}
+
+query GetDrone($droneName: String!) {
+  getDrone(name: $droneName) {
+    name
+    subtitle
+    description
+    price
+    stock
+    imageUrl
+  }
+}

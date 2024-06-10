@@ -1,0 +1,9 @@
+query GetClients{
+  getClients{
+    firstName
+    lastName
+    phoneNumber
+    email
+    gender
+  }
+}

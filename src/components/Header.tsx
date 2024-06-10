@@ -27,13 +27,7 @@ export function Header() {
 
 
         <div className="flex gap-4 items-center">
-        <button
-          onClick={() => signOut()}
-          className="bg-red-500 text-white font-bold px-6 py-2 mt-3"
-        >
-          Log Out
-        </button>
-
+       
         </div>
       </div>
     </div>

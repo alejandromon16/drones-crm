@@ -1,64 +1,17 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import mongoose from "mongoose";
-import { connectToDB } from "@/lib/mongo";
-import User from "@/lib/models/user.model";
+import { NextRequest, NextResponse } from 'next/server';
+import axios from 'axios';
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    await connectToDB();
-
-    const { fullname, email, password } = await request.json();
-
-    if (password < 6)
-      return NextResponse.json(
-        { message: "Password must be at least 6 characters" },
-        { status: 400 }
-      );
-
-    const userFound = await User.findOne({ email });
-
-    if (userFound)
-      return NextResponse.json(
-        {
-          message: "Email already exists",
-        },
-        {
-          status: 409,
-        }
-      );
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const user = new User({
-      fullname,
-      email,
-      password: hashedPassword,
-    });
-
-    const savedUser = await user.save();
-    console.log(savedUser);
-
-    return NextResponse.json(
-      {
-        fullname,
-        email,
-        createdAt: savedUser.createdAt,
-        updatedAt: savedUser.updatedAt,
-      },
-      { status: 201 }
-    );
+    const body = await req.json();
+    console.log(body)
+    const response = await axios.post(`${process.env.NEST_API_URL}/auth/register`, body);
+    console.log('responseee', response)
+    return NextResponse.json(response.data, { status: 201 });
   } catch (error) {
-    if (error instanceof mongoose.Error.ValidationError) {
-      return NextResponse.json(
-        {
-          message: error.message,
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-    return NextResponse.error();
+    const status = 500;
+    const message = 'Internal Server Error';
+    console.log(error)
+    return NextResponse.json({ message }, { status });
   }
 }

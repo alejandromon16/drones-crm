@@ -12,11 +12,12 @@ import {
   UsersRound,
   Settings,
   ChevronRight,
-  LucideHand
+  LucideHand,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
 import { useWindowWidth } from "@react-hook/window-size";
+import { signOut } from "next-auth/react";
 
 export default function SideNavbar({}: Props) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -29,7 +30,7 @@ export default function SideNavbar({}: Props) {
   }
 
   return (
-    <div className="relative min-w-[80px] border-r px-3  pb-10 pt-24 ">
+    <div className="relative min-w-[80px] border-r px-10  pb-10 pt-24 bg-orange-200 h-[100vh] flex flex-col justify-between">
       {!mobileWidth && (
         <div className="absolute right-[-20px] top-7">
           <Button
@@ -48,40 +49,47 @@ export default function SideNavbar({}: Props) {
             title: "Dashboard",
             href: "/admin",
             icon: LayoutDashboard,
-            variant: "default"
+            variant: "default",
           },
           {
             title: "Clientes",
             href: "/admin/clients",
             icon: UsersRound,
-            variant: "ghost"
+            variant: "ghost",
           },
           {
             title: "Vendedores",
             href: "/admin/sellers",
             icon: LucideHand,
-            variant: "ghost"
+            variant: "ghost",
           },
           {
             title: "Drones",
             href: "/admin/drones",
             icon: UsersRound,
-            variant: "ghost"
+            variant: "ghost",
           },
           {
             title: "Ordenes",
             href: "/admin/orders",
             icon: ShoppingCart,
-            variant: "ghost"
+            variant: "ghost",
           },
           {
             title: "Settings",
             href: "/admin/settings",
             icon: Settings,
-            variant: "ghost"
-          }
+            variant: "ghost",
+          },
         ]}
       />
+
+      <button
+        onClick={() => signOut()}
+        className="bg-gray-500 text-white font-bold px-6 py-2 mt-3 rounded-lg relative"
+      >
+        Log Out
+      </button>
     </div>
   );
 }

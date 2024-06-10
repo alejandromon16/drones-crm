@@ -4,8 +4,11 @@ import "./globals.css";
 import { cn } from "../lib/utils";
 import { Toaster } from "@/components/ui/toaster"
 import Providers  from './Providers'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 
 const inter = Inter({ subsets: ["latin"] });
+const queryClient = new QueryClient()
 
 export default function RootLayout({
   children
@@ -26,9 +29,12 @@ export default function RootLayout({
           <Toaster />
           {/* main page */}
           <div className="flex flex-col">
+          <QueryClientProvider client={queryClient}>
+
             <Providers>
               {children}
             </Providers>
+          </QueryClientProvider>
           </div>
       </body>
     </html>

@@ -13,12 +13,12 @@ import React, { useEffect, useState } from "react";
 import PageTitle from "@/components/PageTitle";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { getSellers } from "@/lib/action/sellers.actions";
+import { useGetSellersQuery } from "../../../../generated-types";
 
 type Props = {};
 const columns: ColumnDef<any>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "firstName",
     header: "Name",
     cell: ({ row }) => {
       return (
@@ -40,7 +40,7 @@ const columns: ColumnDef<any>[] = [
     header: "Email"
   },
   {
-    accessorKey: "commisionPercentage",
+    accessorKey: "lastName",
     header: "Comision de Venta",
     cell: ({ row }) => {
       return (
@@ -58,17 +58,7 @@ const columns: ColumnDef<any>[] = [
 
 
 export default function UsersPage({}: Props) {
-  const [sellers, setSellers] = useState<any>([])
-
-  useEffect(() => {
-    const clients = async () => {
-      const res = await getSellers()
-      setSellers(res)
-    }
-
-    clients()
-  },[])
-
+  const {data, isFetched} = useGetSellersQuery({},{})
   const router = useRouter();
 
   const handleClick = () => {
@@ -84,7 +74,9 @@ export default function UsersPage({}: Props) {
         >Crear Vendedor</Button>
       </div>
 
-      <DataTable columns={columns} data={sellers ?? []} />
+    {isFetched && (
+      <DataTable columns={columns} data={data?.getSellers ?? []} />
+    )}
     </div>
   );
 }

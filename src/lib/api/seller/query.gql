@@ -1,0 +1,10 @@
+query GetSellers{
+  getSellers{
+    id
+    firstName
+    lastName
+    phoneNumber
+    email
+    gender
+  }
+}

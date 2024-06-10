@@ -1,6 +1,5 @@
 "use client";
 import { FormEvent, useState } from "react";
-import { AxiosError } from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -12,8 +11,8 @@ function Signin() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const res = await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
       redirect: false,
     });
 
@@ -23,19 +22,21 @@ function Signin() {
   };
 
   return (
-    <div className="justify-center h-[calc(100vh-4rem)] flex items-center">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white px-8 py-10 w-3/12"
-      >
-        {error && <div className="bg-red-500 text-black p-2 mb-2">{error}</div>}
+    <div className="justify-start h-[100vh] flex items-start">
+      <div className="absolute inset-0 z-[-1]">
+        <img 
+          className="w-full h-full object-cover"
+          src="https://www.jouav.com/wp-content/uploads/2022/10/multi-rotor-drone-under-sunset.jpg" alt="" />
+      </div>
+      <form onSubmit={handleSubmit} className="bg-white p-20 w-1/3 h-full shadow-lg">
+        {error && <div className="bg-red-200 text-black p-2 mb-2 rounded-lg">Credenciales Incorrectos</div>}
         <h1 className="text-4xl font-bold mb-7">Iniciar Session</h1>
 
         <label className="text-slate-300">Email:</label>
         <input
           type="email"
           placeholder="Email"
-          className="bg-zinc-800 px-4 py-2 block mb-2 w-full"
+          className="px-4 py-2 block mb-2 w-full"
           name="email"
         />
 
@@ -43,11 +44,11 @@ function Signin() {
         <input
           type="password"
           placeholder="Password"
-          className="bg-zinc-800 px-4 py-2 block mb-2 w-full"
+          className="px-4 py-2 block mb-2 w-full"
           name="password"
         />
 
-        <button className="bg-black text-white px-4 py-2 block w-full mt-4 rounded-md ">
+        <button className="bg-orange-400 text-white px-4 py-2 block w-full mt-4 rounded-md">
           Iniciar Session
         </button>
 

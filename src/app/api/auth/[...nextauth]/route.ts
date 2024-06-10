@@ -1,55 +1,62 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { connectToDB } from "@/lib/mongo";
-import User from "@/lib/models/user.model";
+import axios from "axios";
 
-const handler = NextAuth({
+const options = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      id: "credentials",
       credentials: {
-        email: { label: "Email", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
-        await connectToDB();
-        const userFound = await User.findOne({
-          email: credentials?.email,
-        }).select("+password");
+      authorize: async (credentials) => {
+        try {
+          const response = await axios.post(`${process.env.NEST_API_URL}/auth/login`, {
+            email: credentials?.email,
+            password: credentials?.password,
+          });
 
-        if (!userFound) throw new Error("Invalid credentials");
-
-        const passwordMatch = await bcrypt.compare(
-          credentials!.password,
-          userFound.password
-        );
-
-        if (!passwordMatch) throw new Error("Invalid credentials");
-
-        console.log(userFound);
-
-        return userFound;
-      },
-    }),
+          if (response.data) {
+            return { id: response.data.userId, email: response.data.email };
+          } else {
+            return null;
+          }
+        } catch (error) {
+          throw new Error("Invalid credentials");
+        }
+      }
+    })
   ],
-  pages: {
-    signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.user = user;
+      if (user) {
+        token.id = user.id;
+      }
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user as any;
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+      };
       return session;
-    },
+    }
   },
-});
+  pages: {
+    signIn: "/signin",
+    signOut: "localhost:3001/",
+    error: "/signin",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+};
 
-export { handler as GET, handler as POST };
+// Export named handler for the POST method
+export const POST = async (req, res) => {
+  return await NextAuth(req, res, options);
+};
+
+// Export named handler for the GET method if needed
+export const GET = async (req, res) => {
+  return await NextAuth(req, res, options);
+};

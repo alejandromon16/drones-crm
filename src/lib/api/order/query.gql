@@ -1,0 +1,10 @@
+query GetOrders{
+  orders{
+    id
+    totalAmount
+    orderDate
+    deliveryDate
+    status
+    address
+  }
+}

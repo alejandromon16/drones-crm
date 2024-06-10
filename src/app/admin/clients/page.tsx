@@ -7,6 +7,7 @@ import PageTitle from "@/components/PageTitle";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { getClients } from "@/lib/action/clients.actions";
+import { useGetClientQuery, useGetClientsQuery } from "../../../../generated-types";
 
 type Props = {};
 type Payment = {
@@ -50,18 +51,9 @@ const columns: ColumnDef<Payment>[] = [
 ];
 
 export default function ClientsPage({}: Props) {
-  const [clients, setClients] = useState<any>([])
-
-  useEffect(() => {
-    const clients = async () => {
-      const res = await getClients()
-      setClients(res)
-    }
-
-    clients()
-  },[])
-
+  const { data, isFetched } = useGetClientsQuery({},{})
   const router = useRouter();
+
 
   const handleClick = () => {
     router.push('/admin/clients/create')
@@ -75,7 +67,9 @@ export default function ClientsPage({}: Props) {
           onClick={() => handleClick()}
         >Crear Cliente</Button>
       </div>
-      <DataTable columns={columns} data={clients ?? []} />
+      {isFetched && (
+        <DataTable columns={columns} data={data?.getClients ?? []} />
+      )}
     </div>
   );
 }

@@ -9,8 +9,8 @@ import SalesCard, { SalesProps } from "@/components/SalesCard";
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-5  w-full">
-      <PageTitle title="Drone CRM Dashboard" />
+    <div className="flex flex-col gap-5  w-full ">
+      <PageTitle title="Drones Yohans" />
       <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4">
         {/* {cardData && cardData.map((d, i) => (
           <Card

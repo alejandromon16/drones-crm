@@ -28,7 +28,6 @@ export default function Layout({
         )}
       >
         <div className="flex flex-col w-full">
-          <Header />
           <div className="flex">
             {/* sidebar */}
             <SideNavbar />

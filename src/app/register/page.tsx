@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 function Signup() {
-  const [error, setError] = useState();
+  const [error, setError] = useState<string | undefined>(undefined);
   const router = useRouter();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -20,7 +20,7 @@ function Signup() {
       console.log(signupResponse);
       const res = await signIn("credentials", {
         email: signupResponse.data.email,
-        password: formData.get("password"),
+        password: formData.get("password") as string,
         redirect: false,
       });
 
