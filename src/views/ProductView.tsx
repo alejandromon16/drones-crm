@@ -19,7 +19,7 @@ export default function ProductView() {
   const [product, setProduct] = useState<any>([]);
   const params = useParams<{productId: string}>();
 
-  const { data, isFetched } = useGetDroneQuery({},{droneName: "Drone Yohan"})
+  const { data, isFetched } = useGetDroneQuery({},{droneName: decodeURIComponent(params.productId)})
 
   useEffect(() => {
       setProduct(data)

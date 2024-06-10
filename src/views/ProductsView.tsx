@@ -19,7 +19,7 @@ export default function ProductsView() {
         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-20 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
           {isFetched &&
             data?.getDrones.map((product: any) => (
-              <a href={`/product/${product._id}`} key={product._id}>
+              <a href={`/product/${product.name}`} key={product._id}>
                 <div className="group relative transition-transform duration-300 ease-in-out hover:scale-105">
                   <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80 rounded-xl">
                     <img
