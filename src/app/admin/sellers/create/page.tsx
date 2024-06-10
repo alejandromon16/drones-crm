@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod";
 import { createSeller } from "@/lib/action/sellers.actions";
+import { useCreateSellerMutation } from "../../../../../generated-types";
 
 type FormValues = {
   name: string;
@@ -32,7 +33,7 @@ const schema = z.object({
 });
 
 function Page() {
-
+  const {mutate} = useCreateSellerMutation({},{})
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
@@ -44,11 +45,14 @@ function Page() {
   };
 
   const create = async (data: FormValues) => {
-    await createSeller({
-      name: data.name,
-      phoneNumber: data.phoneNumber,
-      email: data.email,
-      gender: data.gender
+    mutate({
+      CreateSellerInput: {
+        email: data.email,
+        firstName: data.name,
+        lastName: 'ibanez',
+        gender: data.gender,
+        phoneNumber: data.phoneNumber
+      }
     })
     router.push('/admin/sellers')
   }

@@ -26,3 +26,4 @@ mutation CreateDrone($CreateDrone: CreateDroneInput!){
   	description
   }
 }
+

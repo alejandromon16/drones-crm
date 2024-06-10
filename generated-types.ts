@@ -28,7 +28,6 @@ function fetcher<TData, TVariables>(requestInit: RequestInit, query: string, var
     return json.data;
   };
 }
-
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -225,6 +224,13 @@ export type GetClientsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetClientsQuery = { __typename?: 'Query', getClients: Array<{ __typename?: 'Client', firstName: string, lastName: string, phoneNumber: string, email: string, gender: string }> };
 
+export type CreateClientMutationVariables = Exact<{
+  CreateClientInput: CreateClientInput;
+}>;
+
+
+export type CreateClientMutation = { __typename?: 'Mutation', createClient: { __typename?: 'Client', id: string, firstName: string, lastName: string, phoneNumber: string, email: string, gender: string } };
+
 export type GetDronesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -259,6 +265,13 @@ export type GetSellersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetSellersQuery = { __typename?: 'Query', getSellers: Array<{ __typename?: 'Seller', id: string, firstName: string, lastName: string, phoneNumber: string, email: string, gender: string }> };
 
+export type CreateSellerMutationVariables = Exact<{
+  CreateSellerInput: CreateSellerInput;
+}>;
+
+
+export type CreateSellerMutation = { __typename?: 'Mutation', createSeller: { __typename?: 'Seller', id: string, firstName: string } };
+
 
 export const GetClientsDocument = `
     query GetClients {
@@ -288,6 +301,30 @@ export const useGetClientsQuery = <
 useGetClientsQuery.getKey = (variables?: GetClientsQueryVariables) => variables === undefined ? ['GetClients'] : ['GetClients', variables];
 ;
 
+export const CreateClientDocument = `
+    mutation CreateClient($CreateClientInput: CreateClientInput!) {
+  createClient(createClientInput: $CreateClientInput) {
+    id
+    firstName
+    lastName
+    phoneNumber
+    email
+    gender
+  }
+}
+    `;
+export const useCreateClientMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: {  fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreateClientMutation, TError, CreateClientMutationVariables, TContext>
+    ) =>
+    useMutation<CreateClientMutation, TError, CreateClientMutationVariables, TContext>(
+      ['CreateClient'],
+      (variables?: CreateClientMutationVariables) => fetcher<CreateClientMutation, CreateClientMutationVariables>( dataSource.fetchParams || {}, CreateClientDocument, variables)(),
+      options
+    );
 export const GetDronesDocument = `
     query GetDrones {
   getDrones {
@@ -447,3 +484,24 @@ export const useGetSellersQuery = <
 
 useGetSellersQuery.getKey = (variables?: GetSellersQueryVariables) => variables === undefined ? ['GetSellers'] : ['GetSellers', variables];
 ;
+
+export const CreateSellerDocument = `
+    mutation CreateSeller($CreateSellerInput: CreateSellerInput!) {
+  createSeller(createSellerInput: $CreateSellerInput) {
+    id
+    firstName
+  }
+}
+    `;
+export const useCreateSellerMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: {  fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreateSellerMutation, TError, CreateSellerMutationVariables, TContext>
+    ) =>
+    useMutation<CreateSellerMutation, TError, CreateSellerMutationVariables, TContext>(
+      ['CreateSeller'],
+      (variables?: CreateSellerMutationVariables) => fetcher<CreateSellerMutation, CreateSellerMutationVariables>( dataSource.fetchParams || {}, CreateSellerDocument, variables)(),
+      options
+    );

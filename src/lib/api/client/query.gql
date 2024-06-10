@@ -7,3 +7,14 @@ query GetClients{
     gender
   }
 }
+
+mutation CreateClient($CreateClientInput: CreateClientInput!){
+  createClient(createClientInput:$CreateClientInput){
+    id
+    firstName
+    lastName
+    phoneNumber
+    email
+    gender
+  }
+}

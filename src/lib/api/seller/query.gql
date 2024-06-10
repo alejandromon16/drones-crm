@@ -8,3 +8,10 @@ query GetSellers{
     gender
   }
 }
+
+mutation CreateSeller($CreateSellerInput: CreateSellerInput!){
+  createSeller(createSellerInput: $CreateSellerInput){
+    id
+    firstName
+  }
+}
