@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -28,6 +28,7 @@ function fetcher<TData, TVariables>(requestInit: RequestInit, query: string, var
     return json.data;
   };
 }
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -146,6 +147,17 @@ export type Order = {
   user: Scalars['String'];
 };
 
+export type OrderAmount = {
+  __typename?: 'OrderAmount';
+  ordersAmount: Scalars['Int'];
+};
+
+export type OrdersCreditOrQrAmount = {
+  __typename?: 'OrdersCreditOrQrAmount';
+  creditAmount: Scalars['Int'];
+  qrAmount: Scalars['Int'];
+};
+
 export type PreviousState =
   | 'NUEVO'
   | 'USADO';
@@ -156,6 +168,8 @@ export type Query = {
   getClients: Array<Client>;
   getDrone: Drone;
   getDrones: Array<Drone>;
+  getOrdersAmountType: OrderAmount;
+  getOrdersCreditOrQrCodeAmount: OrdersCreditOrQrAmount;
   getSeller: Seller;
   getSellers: Array<Seller>;
   order: Order;
@@ -223,10 +237,22 @@ export type GetDroneQueryVariables = Exact<{
 
 export type GetDroneQuery = { __typename?: 'Query', getDrone: { __typename?: 'Drone', name: string, subtitle: string, description: string, price: number, stock: number, imageUrl: string } };
 
+export type CreateDroneMutationVariables = Exact<{
+  CreateDrone: CreateDroneInput;
+}>;
+
+
+export type CreateDroneMutation = { __typename?: 'Mutation', createDrone: { __typename?: 'Drone', name: string, description: string } };
+
 export type GetOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: string, totalAmount: number, orderDate: any, deliveryDate: any, status: string, address: string }> };
+
+export type GetOrderAmountQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetOrderAmountQuery = { __typename?: 'Query', getOrdersAmountType: { __typename?: 'OrderAmount', ordersAmount: number } };
 
 export type GetSellersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -249,7 +275,7 @@ export const useGetClientsQuery = <
       TData = GetClientsQuery,
       TError = unknown
     >(
-      dataSource: { fetchParams?: RequestInit },
+      dataSource: {  fetchParams?: RequestInit },
       variables?: GetClientsQueryVariables,
       options?: UseQueryOptions<GetClientsQuery, TError, TData>
     ) =>
@@ -278,7 +304,7 @@ export const useGetDronesQuery = <
       TData = GetDronesQuery,
       TError = unknown
     >(
-      dataSource: { fetchParams?: RequestInit },
+      dataSource: {  fetchParams?: RequestInit },
       variables?: GetDronesQueryVariables,
       options?: UseQueryOptions<GetDronesQuery, TError, TData>
     ) =>
@@ -307,7 +333,7 @@ export const useGetDroneQuery = <
       TData = GetDroneQuery,
       TError = unknown
     >(
-      dataSource: { fetchParams?: RequestInit },
+      dataSource: {  fetchParams?: RequestInit },
       variables: GetDroneQueryVariables,
       options?: UseQueryOptions<GetDroneQuery, TError, TData>
     ) =>
@@ -320,6 +346,26 @@ export const useGetDroneQuery = <
 useGetDroneQuery.getKey = (variables: GetDroneQueryVariables) => ['GetDrone', variables];
 ;
 
+export const CreateDroneDocument = `
+    mutation CreateDrone($CreateDrone: CreateDroneInput!) {
+  createDrone(createDroneInput: $CreateDrone) {
+    name
+    description
+  }
+}
+    `;
+export const useCreateDroneMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: {  fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreateDroneMutation, TError, CreateDroneMutationVariables, TContext>
+    ) =>
+    useMutation<CreateDroneMutation, TError, CreateDroneMutationVariables, TContext>(
+      ['CreateDrone'],
+      (variables?: CreateDroneMutationVariables) => fetcher<CreateDroneMutation, CreateDroneMutationVariables>( dataSource.fetchParams || {}, CreateDroneDocument, variables)(),
+      options
+    );
 export const GetOrdersDocument = `
     query GetOrders {
   orders {
@@ -336,7 +382,7 @@ export const useGetOrdersQuery = <
       TData = GetOrdersQuery,
       TError = unknown
     >(
-      dataSource: { fetchParams?: RequestInit },
+      dataSource: {  fetchParams?: RequestInit },
       variables?: GetOrdersQueryVariables,
       options?: UseQueryOptions<GetOrdersQuery, TError, TData>
     ) =>
@@ -347,6 +393,30 @@ export const useGetOrdersQuery = <
     );
 
 useGetOrdersQuery.getKey = (variables?: GetOrdersQueryVariables) => variables === undefined ? ['GetOrders'] : ['GetOrders', variables];
+;
+
+export const GetOrderAmountDocument = `
+    query GetOrderAmount {
+  getOrdersAmountType {
+    ordersAmount
+  }
+}
+    `;
+export const useGetOrderAmountQuery = <
+      TData = GetOrderAmountQuery,
+      TError = unknown
+    >(
+      dataSource: {  fetchParams?: RequestInit },
+      variables?: GetOrderAmountQueryVariables,
+      options?: UseQueryOptions<GetOrderAmountQuery, TError, TData>
+    ) =>
+    useQuery<GetOrderAmountQuery, TError, TData>(
+      variables === undefined ? ['GetOrderAmount'] : ['GetOrderAmount', variables],
+      fetcher<GetOrderAmountQuery, GetOrderAmountQueryVariables>( dataSource.fetchParams || {}, GetOrderAmountDocument, variables),
+      options
+    );
+
+useGetOrderAmountQuery.getKey = (variables?: GetOrderAmountQueryVariables) => variables === undefined ? ['GetOrderAmount'] : ['GetOrderAmount', variables];
 ;
 
 export const GetSellersDocument = `
@@ -365,7 +435,7 @@ export const useGetSellersQuery = <
       TData = GetSellersQuery,
       TError = unknown
     >(
-      dataSource: { fetchParams?: RequestInit },
+      dataSource: {  fetchParams?: RequestInit },
       variables?: GetSellersQueryVariables,
       options?: UseQueryOptions<GetSellersQuery, TError, TData>
     ) =>

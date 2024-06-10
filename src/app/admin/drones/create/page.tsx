@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod";
 import { createProduct } from "@/lib/action/products.actions";
 import { useRouter } from "next/navigation";
+import { useCreateDroneMutation } from '../../../../../generated-types';
 
 const Radio = ({ label, value, onChange, checked, name }) => (
   <label className="inline-flex items-center space-x-2">
@@ -74,15 +75,21 @@ function Page() {
   });
 
   const handleBackClick = () => router.back();
+  const {mutate} = useCreateDroneMutation({},{})
 
   const create = async (data: FormValues) => {
     try {
-      const response = await createProduct({
-        ...data,
-        price: parseInt(data.price, 10),
-        stock: parseInt(data.stock, 10),
-        interest: parseInt(data.interest as string || '')
-      });
+      mutate({
+        CreateDrone: {
+          imageUrl: data.imageUrl,
+          name: data.name,
+          description: data.description,
+          price: parseInt(data.price),
+          stock: parseInt(data.stock),
+          subtitle: data.subtitle
+
+        }
+      })
       router.back();
     } catch (error) {
       console.error("Error creating product:", error);
