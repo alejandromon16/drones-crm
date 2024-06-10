@@ -337,7 +337,7 @@ function Page() {
         {showPaymentDetails && (
           paymentMethod === "card" ? (
             <PaymentDetailsCard onClickPay={() => {
-              router.push('/thakyou')
+              router.push('/thankyou')
             }} />
           ) : (
             <>
