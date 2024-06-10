@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useCartStore from "@/stores/cart.store";
 import { randomUUID } from "crypto";
+import { useRouter } from "next/navigation";
 
 const Header = () => (
   <div className="flex flex-col items-center border-b bg-white py-4 sm:flex-row sm:px-10 lg:px-20 xl:px-32">
@@ -157,7 +158,7 @@ const OrderSummaryFooter = ({ totalPrice }) => (
   </>
 );
 
-const PaymentDetailsCard = () => (
+const PaymentDetailsCard  = ({onClickPay}) => (
   <div>
     <label htmlFor="email" className="mt-4 mb-2 block text-sm font-medium">Email</label>
     <div className="relative">
@@ -204,6 +205,10 @@ const PaymentDetailsCard = () => (
       </select>
       <input type="text" name="billing-zip" className="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500" placeholder="ZIP" />
     </div>
+
+    <button className="mt-4 mb-8 w-full rounded-md bg-black px-6 py-3 font-medium text-white" onClick={onClickPay}>
+      Pagar
+    </button>
   </div>
 );
 
@@ -273,13 +278,50 @@ const QRCodeComponent = () => {
       </div>
     );
 };
-  
-  
 
+const PrintInvoice = ({ items, totalPrice }) => {
+  const printInvoice = () => {
+    const printContents = document.getElementById('invoice').innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload();
+  };
+
+  return (
+    <div>
+      <div id="invoice" style={{ display: 'none' }}>
+        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
+          <h2 style={{ borderBottom: '2px solid #000', paddingBottom: '10px' }}>Factura</h2>
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
+            {items.map((item, index) => (
+              <li key={index} style={{ borderBottom: '1px solid #ccc', padding: '10px 0' }}>
+                <span>{item.name}</span>
+                <span style={{ float: 'right' }}>Cantidad: {item.quantity}</span>
+                <br />
+                <span>Precio: ${item.price.toFixed(2)}</span>
+                <span style={{ float: 'right' }}>Total: ${(item.price * item.quantity).toFixed(2)} Bs</span>
+              </li>
+            ))}
+          </ul>
+          <p style={{ marginTop: '20px', fontSize: '18px' }}>Precio Total: ${totalPrice.toFixed(2)}</p>
+          <p style={{ textAlign: 'center', marginTop: '40px', fontSize: '18px', fontWeight: 'bold' }}>Gracias por tu compra!</p>
+        </div>
+      </div>
+      <button onClick={printInvoice} className="mt-4 p-2 bg-blue-500 text-white rounded">Imprir factura</button>
+    </div>
+  );
+};
+
+  
 function Page() {
   const { isOpen, toggleCart, totalPrice, items, removeItem, clearCart } = useCartStore();
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+  const [showDetail, setShowDetail] = useState(true)
+  const [showInvoice, setShowInvoice] = useState(false);
+  const router = useRouter()
 
   const handleProceedToPayment = () => {
     setShowPaymentDetails(true);
@@ -289,19 +331,32 @@ function Page() {
     <div>
       <Header />
       <div className="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
-        <OrderSummary items={items} removeItem={removeItem} />
-        {showPaymentDetails ? (
+        { !showInvoice && (
+          <OrderSummary items={items} removeItem={removeItem} />
+        )}
+        {showPaymentDetails && (
           paymentMethod === "card" ? (
-            <PaymentDetailsCard />
+            <PaymentDetailsCard onClickPay={() => {
+              router.push('/thakyou')
+            }} />
           ) : (
-            <QRCodeComponent />
+            <>
+              <QRCodeComponent />
+              <PrintInvoice items={items} totalPrice={totalPrice} />
+            </>
           )
-        ) : (
-          <PaymentDetails totalPrice={totalPrice} setPaymentMethod={setPaymentMethod}  handleProceedToPayment={handleProceedToPayment}/>
+        )}
+        
+        {!showPaymentDetails && showDetail && (
+          <PaymentDetails totalPrice={totalPrice} setPaymentMethod={setPaymentMethod} handleProceedToPayment={handleProceedToPayment} />
+        )}
+
+        {showInvoice && (
+          <PrintInvoice items={items} totalPrice={totalPrice} />
         )}
       </div>
     </div>
   );
 }
 
-export default Page;
+export default Page
