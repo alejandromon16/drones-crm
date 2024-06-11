@@ -28,6 +28,7 @@ function fetcher<TData, TVariables>(requestInit: RequestInit, query: string, var
     return json.data;
   };
 }
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -107,6 +108,7 @@ export type Mutation = {
   createOrder: Order;
   createSeller: Seller;
   createUser: UserType;
+  updateDrone: Drone;
 };
 
 
@@ -132,6 +134,11 @@ export type MutationCreateSellerArgs = {
 
 export type MutationCreateUserArgs = {
   createUserInput: CreateUserInput;
+};
+
+
+export type MutationUpdateDroneArgs = {
+  updateDroneInput: UpdateDroneInput;
 };
 
 export type Order = {
@@ -163,6 +170,7 @@ export type PreviousState =
 
 export type Query = {
   __typename?: 'Query';
+  getBestDrone: Drone;
   getClient: Client;
   getClients: Array<Client>;
   getDrone: Drone;
@@ -211,6 +219,16 @@ export type Seller = {
   phoneNumber: Scalars['String'];
 };
 
+export type UpdateDroneInput = {
+  description?: InputMaybe<Scalars['String']>;
+  id: Scalars['Float'];
+  imageUrl?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  price?: InputMaybe<Scalars['Float']>;
+  stock?: InputMaybe<Scalars['Float']>;
+  subtitle?: InputMaybe<Scalars['String']>;
+};
+
 export type UserType = {
   __typename?: 'UserType';
   email: Scalars['String'];
@@ -249,6 +267,18 @@ export type CreateDroneMutationVariables = Exact<{
 
 
 export type CreateDroneMutation = { __typename?: 'Mutation', createDrone: { __typename?: 'Drone', name: string, description: string } };
+
+export type UpdateDroneMutationVariables = Exact<{
+  UpdateDroneInput: UpdateDroneInput;
+}>;
+
+
+export type UpdateDroneMutation = { __typename?: 'Mutation', updateDrone: { __typename?: 'Drone', subtitle: string } };
+
+export type GetBestDroneQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBestDroneQuery = { __typename?: 'Query', getBestDrone: { __typename?: 'Drone', name: string, subtitle: string, price: number, stock: number } };
 
 export type GetOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -403,6 +433,52 @@ export const useCreateDroneMutation = <
       (variables?: CreateDroneMutationVariables) => fetcher<CreateDroneMutation, CreateDroneMutationVariables>( dataSource.fetchParams || {}, CreateDroneDocument, variables)(),
       options
     );
+export const UpdateDroneDocument = `
+    mutation UpdateDrone($UpdateDroneInput: UpdateDroneInput!) {
+  updateDrone(updateDroneInput: $UpdateDroneInput) {
+    subtitle
+  }
+}
+    `;
+export const useUpdateDroneMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: {  fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateDroneMutation, TError, UpdateDroneMutationVariables, TContext>
+    ) =>
+    useMutation<UpdateDroneMutation, TError, UpdateDroneMutationVariables, TContext>(
+      ['UpdateDrone'],
+      (variables?: UpdateDroneMutationVariables) => fetcher<UpdateDroneMutation, UpdateDroneMutationVariables>( dataSource.fetchParams || {}, UpdateDroneDocument, variables)(),
+      options
+    );
+export const GetBestDroneDocument = `
+    query GetBestDrone {
+  getBestDrone {
+    name
+    subtitle
+    price
+    stock
+  }
+}
+    `;
+export const useGetBestDroneQuery = <
+      TData = GetBestDroneQuery,
+      TError = unknown
+    >(
+      dataSource: {  fetchParams?: RequestInit },
+      variables?: GetBestDroneQueryVariables,
+      options?: UseQueryOptions<GetBestDroneQuery, TError, TData>
+    ) =>
+    useQuery<GetBestDroneQuery, TError, TData>(
+      variables === undefined ? ['GetBestDrone'] : ['GetBestDrone', variables],
+      fetcher<GetBestDroneQuery, GetBestDroneQueryVariables>( dataSource.fetchParams || {}, GetBestDroneDocument, variables),
+      options
+    );
+
+useGetBestDroneQuery.getKey = (variables?: GetBestDroneQueryVariables) => variables === undefined ? ['GetBestDrone'] : ['GetBestDrone', variables];
+;
+
 export const GetOrdersDocument = `
     query GetOrders {
   orders {

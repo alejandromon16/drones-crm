@@ -44,7 +44,7 @@ export default function UsersPage({}: Props) {
         >Agregar Dron</Button>
       </div>
       {isFetched && (
-        <DataTable columns={columns} data={data?.getDrones ?? []} />
+        <DataTable columns={columns} data={data?.getDrones ?? []} handleEditClick={() => router.push('/admin/drones/update/drone-pele')} />
       )}
     </div>
   );

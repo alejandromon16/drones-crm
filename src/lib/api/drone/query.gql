@@ -27,3 +27,17 @@ mutation CreateDrone($CreateDrone: CreateDroneInput!){
   }
 }
 
+mutation UpdateDrone($UpdateDroneInput: UpdateDroneInput!){
+  updateDrone(updateDroneInput: $UpdateDroneInput){
+    subtitle
+  }
+}
+
+query GetBestDrone{
+  getBestDrone{
+    name
+    subtitle
+    price
+    stock
+  }
+}
